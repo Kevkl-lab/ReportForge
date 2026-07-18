@@ -4,6 +4,7 @@
 #include <QFileInfo>
 #include <QUuid>
 #include <QDebug>
+#include <QStandardPaths>
 
 namespace reportforge::utils {
 
@@ -16,12 +17,14 @@ bool FileUtils::ensureDirExists(const std::string& directoryPath) {
 }
 
 std::string FileUtils::getEvidenceDirectory(int projectId) {
-    // Storing evidence in a local subfolder in the application directory for easy tracking
-    QDir appDir = QDir::current();
-    QString evidencePath = appDir.filePath(QString("evidence/project_%1").arg(projectId));
+    // Storing evidence in a local subfolder in the application AppData directory
+    QString appDataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+    QDir().mkpath(appDataDir);
+    QString evidencePath = QDir(appDataDir).filePath(QString("evidence/project_%1").arg(projectId));
     ensureDirExists(evidencePath.toStdString());
     return evidencePath.toStdString();
 }
+
 
 std::string FileUtils::copyEvidenceFile(int projectId, const std::string& sourcePath, const std::string& fileName) {
     QString destDir = QString::fromStdString(getEvidenceDirectory(projectId));

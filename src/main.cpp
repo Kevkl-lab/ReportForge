@@ -1,3 +1,5 @@
+#include <QStandardPaths>
+#include <QDir>
 #include <QApplication>
 #include <QMainWindow>
 #include <QStackedWidget>
@@ -210,8 +212,13 @@ private:
 int main(int argc, char* argv[]) {
     QApplication app(argc, argv);
 
+    // Resolve SQLite database path dynamically in a standard user AppData directory
+    QString appDataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+    QDir().mkpath(appDataDir);
+    QString dbPath = QDir(appDataDir).filePath("reportforge.db");
+
     // Initialize Database
-    if (!database::DbManager::instance().initialize("reportforge.db")) {
+    if (!database::DbManager::instance().initialize(dbPath)) {
         return 1;
     }
 
