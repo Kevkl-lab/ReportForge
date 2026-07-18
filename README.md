@@ -120,6 +120,46 @@ To build ReportForge, you need:
 
 ---
 
+## 📦 Creating Installer Packages (CPack)
+
+ReportForge supports building native, self-contained installers for macOS, Linux, and Windows using CMake's CPack engine. This bundles all required Qt dependencies automatically.
+
+### 🍎 Pack macOS DMG (Apple Silicon / Intel)
+To build a standalone Drag-and-Drop Disk Image (`.dmg`):
+```bash
+# 1. Configure and compile in Release mode
+cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=/opt/homebrew/opt/qt
+cmake --build build --config Release
+
+# 2. Package into a DMG installer
+cpack --config build/CPackConfig.cmake
+```
+This generates `ReportForge-1.0.0-macOS-AppleSilicon.dmg` (or Intel) in the root folder.
+
+### 🪟 Pack Windows Installer (NSIS / `.exe`)
+To create a Windows installer, make sure [NSIS](https://nsis.sourceforge.io/) is installed, then run from a Visual Studio Command Prompt:
+```cmd
+# 1. Configure and compile in Release mode
+cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=C:\Qt\6.x.x\msvc2022_64
+cmake --build build --config Release
+
+# 2. Package into an NSIS installer
+cpack --config build/CPackConfig.cmake
+```
+
+### 🐧 Pack Linux Packages (DEB / `.tar.gz`)
+To build native Debian packages (`.deb`) and archives:
+```bash
+# 1. Configure and compile in Release mode
+cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+cmake --build build
+
+# 2. Package the archives
+cpack --config build/CPackConfig.cmake
+```
+
+---
+
 ## 🔒 Security & Data Privacy
 
 ReportForge is built for local privacy:
