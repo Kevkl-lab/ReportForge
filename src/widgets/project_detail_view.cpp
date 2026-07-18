@@ -14,6 +14,8 @@
 #include <QDateTime>
 #include <QFileInfo>
 #include <QDebug>
+#include <QStandardPaths>
+#include <QDir>
 
 namespace reportforge::widgets {
 
@@ -450,9 +452,12 @@ void ProjectDetailView::refresh() {
     notesEditor_->setPlainText(QString::fromStdString(p.notes));
 
     // Default file paths
-    QString appPath = QDir::currentPath();
-    pdfPathInput_->setText(QString("%1/%2_report.pdf").arg(appPath, QString::fromStdString(p.name).replace(" ", "_")));
-    jsonPathInput_->setText(QString("%1/%2_backup.json").arg(appPath, QString::fromStdString(p.name).replace(" ", "_")));
+    QString defaultDir = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
+    if (defaultDir.isEmpty()) {
+        defaultDir = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
+    }
+    pdfPathInput_->setText(QDir(defaultDir).filePath(QString("%1_report.pdf").arg(QString::fromStdString(p.name).replace(" ", "_"))));
+    jsonPathInput_->setText(QDir(defaultDir).filePath(QString("%1_backup.json").arg(QString::fromStdString(p.name).replace(" ", "_"))));
 
     // Populate Findings log
     database::FindingRepository findRepo;
