@@ -6,6 +6,19 @@ Unlike generic note-taking tools, **ReportForge** acts as a structured lifecycle
 
 ---
 
+## 🖼️ Screenshots
+
+### Dashboard View
+![Dashboard View](screenshots/dashboard.png)
+
+### Project Scope Tab
+![Project Scope Tab](screenshots/project_scope.png)
+
+### Finding Details & CVSS Calculator
+![Finding Details & CVSS Calculator](screenshots/finding_editor.png)
+
+---
+
 ## 📸 Key Features
 
 *   **Sleek Dark Cyber UI**: Tailored visual experience built with custom Qt stylesheets featuring a dark-theme palette with violet and cyan highlights.
