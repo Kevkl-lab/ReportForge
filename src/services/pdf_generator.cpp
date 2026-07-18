@@ -257,7 +257,7 @@ static void renderMarkdownBlock(QPainter& painter, QPdfWriter* device, LayoutCon
     
     // Set custom stylesheet on the QTextDocument to style HTML tags
     doc.setDefaultStyleSheet(
-        "body { font-family: Arial; font-size: 10pt; color: #23293b; line-height: 140%; }"
+        "body, p, li, ul { font-family: Arial; font-size: 10pt; color: #23293b; line-height: 140%; }"
         "h1 { font-family: Arial; font-size: 13pt; color: #8b5cf6; margin-top: 12px; margin-bottom: 4px; font-weight: bold; }"
         "h2 { font-family: Arial; font-size: 10.5pt; color: #06b6d4; margin-top: 8px; margin-bottom: 4px; font-weight: bold; }"
         "code { font-family: 'Courier New', monospace; font-size: 9pt; background-color: #f8fafc; color: #0f172a; }"
@@ -265,8 +265,13 @@ static void renderMarkdownBlock(QPainter& painter, QPdfWriter* device, LayoutCon
         "li { margin-bottom: 2px; }"
     );
     
+    // Convert Markdown to HTML first in a temp doc so the real styled doc can apply stylesheet properties to the tags
+    QTextDocument tempDoc;
+    tempDoc.setMarkdown(markdown);
+    QString html = tempDoc.toHtml();
+
     doc.setDefaultFont(QFont("Arial", 10));
-    doc.setMarkdown(markdown);
+    doc.setHtml(html);
     
     // Scale document layout from default 96 DPI to printer DPI
     double docScale = device->resolution() / 96.0;
@@ -755,11 +760,16 @@ static void renderDocument(QPainter& painter, QPdfWriter* device, LayoutContext&
             }
             y += pt(20);
 
-            // Formulate Code Block text layout (in pixels, scaled)
+            // Formulate Code Block text layout (in pixels, scaled via HTML pre for text color styling)
             QTextDocument codeDoc;
+            codeDoc.setDefaultStyleSheet(
+                "body, pre { font-family: 'Courier New', monospace; font-size: 9pt; color: #0f172a; }"
+            );
             codeDoc.setDefaultFont(monoFont);
+            
+            QString escapedCode = QString::fromStdString(f.proofOfConcept).toHtmlEscaped();
+            codeDoc.setHtml(QString("<pre>%1</pre>").arg(escapedCode));
             codeDoc.setTextWidth((ctx.width - 2 * ctx.margin - pt(30)) / docScale);
-            codeDoc.setPlainText(QString::fromStdString(f.proofOfConcept));
             double codeH = codeDoc.size().height() * docScale;
 
             if (y + codeH + pt(20) > ctx.height - ctx.margin) {
