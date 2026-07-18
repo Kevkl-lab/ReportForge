@@ -136,6 +136,14 @@ cpack --config build/CPackConfig.cmake
 ```
 This generates `ReportForge-1.0.0-macOS-AppleSilicon.dmg` (or Intel) in the root folder.
 
+> [!IMPORTANT]
+> **macOS Gatekeeper Warning (Unsigned Apps)**:
+> Since locally generated DMG packages are not signed with a paid Apple Developer ID, running the installed app will prompt a macOS Gatekeeper warning (*"cannot be opened because of a problem"* or *"untrusted developer"*).
+> To run your locally built app, drag it to `/Applications`, then run the following command in your Terminal to strip the quarantine attribute and apply an ad-hoc signature:
+> ```bash
+> xattr -cr /Applications/ReportForge.app && codesign --force --deep --sign - /Applications/ReportForge.app
+> ```
+
 ### 🪟 Pack Windows Installer (NSIS / `.exe`)
 To create a Windows installer, make sure [NSIS](https://nsis.sourceforge.io/) is installed, then run from a Visual Studio Command Prompt:
 ```cmd
