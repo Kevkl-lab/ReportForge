@@ -303,6 +303,9 @@ static void renderDocument(QPainter& painter, QPdfWriter* device, LayoutContext&
     double docScale = device->resolution() / 96.0;
     double docWidth = (ctx.width - 2 * ctx.margin) / docScale;
 
+    // Initialize/Reset painter state to dark pen to prevent white cover page leaks
+    painter.setPen(TextDark);
+
     QString projectTitle = QString::fromStdString(project.name);
     
     QFont coverTitleFont("Arial", 28, QFont::Bold);
@@ -378,6 +381,9 @@ static void renderDocument(QPainter& painter, QPdfWriter* device, LayoutContext&
         painter.drawText(ctx.margin, ctx.height - ctx.margin + pt(15), "Generated dynamically. Confidential deliverable. Property of respective client.");
         painter.restore();
     }
+
+    // Reset default text pen for safety
+    painter.setPen(TextDark);
 
     // ----------------------------------------------------
     // PAGE 2: TABLE OF CONTENTS (Toc)
@@ -643,7 +649,7 @@ static void renderDocument(QPainter& painter, QPdfWriter* device, LayoutContext&
         }
         y += pt(45);
 
-        // Metadata table (correct stylesheet resolution, escaped %% in HTML)
+        // Metadata table (correct stylesheet resolution, body, td, th explicit dark gray styling, escaped %% in HTML)
         QString htmlTable = QString(
             "<table>"
             "  <tr>"
@@ -679,7 +685,7 @@ static void renderDocument(QPainter& painter, QPdfWriter* device, LayoutContext&
         tableDoc.setTextWidth(docWidth);
         tableDoc.setDefaultFont(QFont("Arial", 9));
         tableDoc.setDefaultStyleSheet(
-            "body { font-family: Arial; font-size: 9.5pt; color: #1e293b; }"
+            "body, td, th { font-family: Arial; font-size: 9.5pt; color: #1e293b; }"
             "table { width: 100%; border-collapse: collapse; border: 1px solid #cbd5e1; }"
             "th { background-color: #f8fafc; font-weight: bold; padding: 6px; border: 1px solid #cbd5e1; color: #475569; }"
             "td { padding: 6px; border: 1px solid #cbd5e1; }"
@@ -696,7 +702,7 @@ static void renderDocument(QPainter& painter, QPdfWriter* device, LayoutContext&
         }
         y += tableH + pt(25);
 
-        // Subsections: Description, Impact, Recommendation
+        // Subsections: Description, Impact, Recommendation, Reproduction Steps
         auto renderSubsection = [&](const QString& name, const QString& mdContent, const QString& iconType) {
             if (mdContent.isEmpty()) return;
 
@@ -715,6 +721,7 @@ static void renderDocument(QPainter& painter, QPdfWriter* device, LayoutContext&
                 if (iconType == "bug") drawBugIcon(painter, ctx.margin, y - pt(5), pt(16), ctx.scale);
                 else if (iconType == "warning") drawWarningIcon(painter, ctx.margin, y - pt(5), pt(16), ctx.scale);
                 else if (iconType == "shield") drawShieldIcon(painter, ctx.margin, y - pt(5), pt(16), ctx.scale);
+                else if (iconType == "document") drawDocumentIcon(painter, ctx.margin, y - pt(5), pt(16), ctx.scale);
                 
                 painter.drawText(ctx.margin + pt(22), y + pt(11), name);
             }
@@ -726,6 +733,7 @@ static void renderDocument(QPainter& painter, QPdfWriter* device, LayoutContext&
 
         renderSubsection("Vulnerability Description", QString::fromStdString(f.description), "bug");
         renderSubsection("Risk & Exploit Impact", QString::fromStdString(f.impact), "warning");
+        renderSubsection("Reproduction Steps", QString::fromStdString(f.reproductionSteps), "document");
         renderSubsection("Remediation Recommendation", QString::fromStdString(f.recommendation), "shield");
 
         // Code block for Proof of Concept (Monospace card with grey background)
@@ -908,7 +916,7 @@ static void renderDocument(QPainter& painter, QPdfWriter* device, LayoutContext&
     appTableDoc.setTextWidth(docWidth);
     appTableDoc.setDefaultFont(QFont("Arial", 9));
     appTableDoc.setDefaultStyleSheet(
-        "body { font-family: Arial; font-size: 9pt; color: #1e293b; }"
+        "body, td, th { font-family: Arial; font-size: 9pt; color: #1e293b; }"
         "table { width: 100%; border-collapse: collapse; border: 1px solid #cbd5e1; }"
         "th { background-color: #f8fafc; font-weight: bold; padding: 6px; border: 1px solid #cbd5e1; color: #475569; }"
         "td { padding: 6px; border: 1px solid #cbd5e1; }"
