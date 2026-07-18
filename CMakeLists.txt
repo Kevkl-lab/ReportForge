@@ -119,3 +119,61 @@ set_target_properties(ReportForge PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
 )
+
+if(APPLE)
+    set_target_properties(ReportForge PROPERTIES
+        MACOSX_BUNDLE TRUE
+        MACOSX_BUNDLE_BUNDLE_NAME "ReportForge"
+        MACOSX_BUNDLE_GUI_IDENTIFIER "com.reportforge.app"
+        MACOSX_BUNDLE_BUNDLE_VERSION "${PROJECT_VERSION}"
+        MACOSX_BUNDLE_SHORT_VERSION_STRING "${PROJECT_VERSION}"
+    )
+endif()
+
+# ----------------------------------------------------
+# INSTALLATION & COMPONENT DEPLOYMENT
+# ----------------------------------------------------
+include(GNUInstallDirs)
+
+install(TARGETS ReportForge
+    BUNDLE DESTINATION .
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+)
+
+# Qt 6 modern deployment scripting (Bundles Qt libraries and plugins into the package)
+if(COMMAND qt_generate_deploy_app_script)
+    qt_generate_deploy_app_script(
+        TARGET ReportForge
+        OUTPUT_SCRIPT deploy_script.cmake
+    )
+    install(SCRIPT ${deploy_script.cmake})
+endif()
+
+# ----------------------------------------------------
+# CPACK INSTALLER CONFIGURATION
+# ----------------------------------------------------
+set(CPACK_PACKAGE_NAME "ReportForge")
+set(CPACK_PACKAGE_VENDOR "Kevkl-lab")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "ReportForge - Professional Pentest Report Generator")
+set(CPACK_PACKAGE_VERSION "${PROJECT_VERSION}")
+set(CPACK_PACKAGE_INSTALL_DIRECTORY "ReportForge")
+
+if(APPLE)
+    set(CPACK_GENERATOR "DragNDrop")
+    set(CPACK_DMG_VOLUME_NAME "ReportForge")
+    set(CPACK_SYSTEM_NAME "macOS-AppleSilicon")
+elseif(WIN32)
+    set(CPACK_GENERATOR "NSIS")
+    set(CPACK_NSIS_PACKAGE_NAME "ReportForge")
+    set(CPACK_NSIS_DISPLAY_NAME "ReportForge")
+    set(CPACK_NSIS_HELP_LINK "https://github.com/Kevkl-lab/ReportForge")
+else()
+    set(CPACK_GENERATOR "DEB;TGZ")
+    set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Kevkl-lab <support@reportforge.local>")
+    set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
+endif()
+
+include(CPack)
+
