@@ -1,0 +1,33 @@
+# CMake build directories
+build_cmake/
+build/
+CMakeFiles/
+CMakeCache.txt
+Makefile
+cmake_install.cmake
+*.cmake
+.ninja_deps
+.ninja_log
+build.ninja
+
+# Compiled binaries
+bin/
+lib/
+ReportForge
+
+# Application Database (Contains highly sensitive customer data!)
+reportforge.db
+reportforge.db-journal
+reportforge.db-wal
+
+# Evidence Attachments (Contains screenshots, logs, txt files!)
+evidence/
+
+# Generated PDF reports
+*.pdf
+
+# macOS system files
+.DS_Store
+
+# Qt Creator settings
+*.user
