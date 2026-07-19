@@ -6,6 +6,15 @@ Unlike generic note-taking tools, **ReportForge** acts as a structured lifecycle
 
 ---
 
+## 💾 Download & Installation
+
+If you just want to run ReportForge on your computer, you do not need to compile it from source. You can download the pre-built installer:
+
+*   **Windows**: Go to the [Releases](https://github.com/Kevkl-lab/ReportForge/releases) page, download the latest `ReportForge-x.y.z-win64.exe` installer, and run it. The installer will automatically bundle all dependencies and set up Desktop and Start Menu shortcuts.
+*   **macOS / Linux**: Pre-compiled packages will be added soon. For now, please compile the app from source using the Developer Guide below.
+
+---
+
 ## 🖼️ Screenshots
 
 ### Dashboard View
@@ -51,7 +60,7 @@ graph TD
 
 ---
 
-## 🛠️ Build and Compilation Guide
+## 🛠️ Developer Guide (Building from Source)
 
 ### Prerequisites
 To build ReportForge, you need:
