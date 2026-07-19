@@ -170,6 +170,11 @@ elseif(WIN32)
     set(CPACK_NSIS_PACKAGE_NAME "ReportForge")
     set(CPACK_NSIS_DISPLAY_NAME "ReportForge")
     set(CPACK_NSIS_HELP_LINK "https://github.com/Kevkl-lab/ReportForge")
+    # Add Start Menu shortcut
+    set(CPACK_NSIS_MENU_LINKS "bin/ReportForge.exe" "ReportForge")
+    # Add Desktop shortcut and ensure it is removed on uninstall
+    set(CPACK_NSIS_CREATE_ICONS_EXTRA "  CreateShortCut '$DESKTOP\\\\ReportForge.lnk' '$INSTDIR\\\\bin\\\\ReportForge.exe'")
+    set(CPACK_NSIS_DELETE_ICONS_EXTRA "  Delete '$DESKTOP\\\\ReportForge.lnk'")
 else()
     set(CPACK_GENERATOR "DEB;TGZ")
     set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Kevkl-lab <support@reportforge.local>")

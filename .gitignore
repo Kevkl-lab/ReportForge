@@ -31,3 +31,7 @@ evidence/
 
 # Qt Creator settings
 *.user
+
+# Installer outputs
+ReportForge-*.exe
+
